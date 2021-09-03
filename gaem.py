@@ -1,6 +1,8 @@
 import pygame
 import math
 import random
+import gamelibs.menu as m
+import gamelibs.mapeditor as edit
 
 pygame.mixer.pre_init(44100,-16,2,512)
 pygame.init()
@@ -114,7 +116,7 @@ def main():
             apple_eaten=True
             tileattr[int(apple_pos[0]/32)][int(apple_pos[1]/32)]=0
         elif (headtile==2 or headtile==3) and time==4:
-                exit()
+                return
 
         if xval > 640-snake_seg_size:
             xval=0
@@ -152,7 +154,13 @@ def main():
         clock.tick(60)
 
 if __name__ == "__main__":
-    main()
+    arg=m.menu()
+    while arg:
+        if arg == 1:
+            main()
+        elif arg == 2:
+            edit.editor()
+        arg=m.menu()
 
 
 
