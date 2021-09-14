@@ -1,6 +1,8 @@
 import pygame
 #import menu as m
 
+#This thing exists because it would help me create levels easily, and to get your creativity up
+
 pygame.init()
 pygame.mixer.pre_init(44100,-16,2,512)
 color=(15,56,15)
@@ -8,6 +10,7 @@ font=pygame.font.Font(None,32)
 screen=pygame.display.set_mode((640,480))
 
 def save(mapattr):
+    #this variable stays true until you enter a name
     inputed=True
     nameq=font.render("file name?",True,color)
     name='' 
@@ -28,21 +31,27 @@ def save(mapattr):
         namea=font.render(name,True,color)
         screen.blit(namea,(200,240))
         pygame.display.update()
+    #just for its exhibition, the level is saved in the custom directory, a feature could be coded to use those custom levels for gameplay
     addr="custom/"
+    #addr="levels/"
     addr+=name
     name=addr
+    #it gets the position of start of extension
     extpos=len(name)-4
     ext=name[extpos:]
+    #check if the extension is .map,if not it appends to the map
     if ext != ".map":
         name+=".map"
+    #write the map in the file
     with open(name,"w") as file:
         for xposarr in mapattr:
             for xpos in xposarr:
                 file.write(str(xpos) + " ")
             file.write("\n")
 
-
+#the editor function
 def editor():
+    #build the empty map
     mapattr=[]
     k=0
     while k<20:
@@ -53,7 +62,9 @@ def editor():
             l+=1
         mapattr.append(mapattrx)
         k+=1
+
     wall=pygame.image.load("images/wall.png")
+    
     editor_working=True
     while editor_working:
         screen.fill((155,188,15))
@@ -86,6 +97,7 @@ def editor():
 
 
         mousebutton=pygame.mouse.get_pressed()
+        #left click places a wall,right click removes it
         if mousebutton[0]:
             mapattr[int(mposx/32)][int(mposy/32)]=3
         elif mousebutton[2]:

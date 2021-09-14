@@ -11,6 +11,7 @@ def menu():
    while True:
         screen.fill((255,255,255))
         mx,my = pygame.mouse.get_pos()
+        #here, i could not get the time to give the boxes some graphics,so the menu looks really unfinished
         button_1=pygame.Rect(220,200,200,50)
         button_2=pygame.Rect(220,300,200,50)
         button_3=pygame.Rect(220,400,200,50)
