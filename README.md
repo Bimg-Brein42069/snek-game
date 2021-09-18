@@ -17,5 +17,5 @@ Patch Notes:
 0.0.0:
   -the first commit of the game
   
- Future updates for 1.0.3:
+ Future updates for 0.0.3:
   -adding scores
