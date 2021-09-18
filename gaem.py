@@ -2,7 +2,9 @@ import pygame
 import math
 import random
 import gamelibs.menu as m
+import gamelibs.editorload as edl
 import gamelibs.mapeditor as edit
+import gamelibs.levelselmenu as lsm
 
 #This game is incomplete as of now
 
@@ -10,15 +12,29 @@ pygame.mixer.pre_init(44100,-16,2,512)
 pygame.init()
 screen = pygame.display.set_mode((640,480))
 clock = pygame.time.Clock()
+snake_seg_size=32
 
-def main():
+def main(map_count):
     snake_body=pygame.image.load('images/snakebody.png')
     #The array to store each segment of the snake
     snake_segs=[] 
     snake_segs.append(pygame.image.load('images/snaketail.png'))
-   
+    snake_init_pos_array=[]
+    for j in range(0,6):
+        snakex_array=[]
+        for i in range(0,4):
+            snakex_array.append((192-(snake_seg_size*(4-i)),192))
+        snake_init_pos_array.append(snakex_array)
+
+    snake_init_pos_array[3]=[(0,384),(32,384),(64,384),(96,384)]
+
     tileattr=[]
-    with open("level1.map","r") as file:
+    try:
+        lvlptr=open("levels/level" + str(map_count-1) + ".map","r")
+    except:
+        lvlptr=open("custom/" + map_count,"r")
+        map_count=1
+    with lvlptr as file:
         data = file.readlines()
         tileattrx=[]
         for line in data:
@@ -36,11 +52,11 @@ def main():
     for i in range(0,3):
         snake_segs.append(snake_body)
     snake_dir=3
-    snake_seg_size=32
+
     #this contains the position and direction of movement of each segment of the snake, will be useful for animating it later
     snake_posdir_array=[]
     for i in range(0,4):
-        snake_posdir_array.append([(160-(snake_seg_size*(4-i)),160),snake_dir])
+        snake_posdir_array.append((snake_init_pos_array[map_count-1][i],snake_dir))
     #time count
     time=0
     #previous values of x and y used in line 126 to prevent appending of snakesegments in segment list during the non-mobile frames
@@ -116,6 +132,15 @@ def main():
         xval=snake_posdir_array[3+score][0][0] + velX
         yval=snake_posdir_array[3+score][0][1] - velY  
         #here the head tile attribute is set in advance
+        #if the snake moves out of the screen, he is brought back to it properly
+        if xval > 640-snake_seg_size:
+            xval=0
+        if xval < 0:
+            xval=640-snake_seg_size
+        if yval > 480-snake_seg_size:
+            yval=0
+        if yval < 0:
+            yval=480-snake_seg_size
         headtile=tileattr[int(snake_posdir_array[3+score][0][0]/32)][int(snake_posdir_array[3+score][0][1]/32)]
         #if snake's head meets the apple, the apple is deemed to be eaten
         #(ofc u could add some frames for his mouth opening,but animation takes time :[ )
@@ -127,15 +152,7 @@ def main():
         elif (headtile==2 or headtile==3) and time==4:
                 return
         
-        #if the snake moves out of the screen, he is brought back to it properly
-        if xval > 640-snake_seg_size:
-            xval=0
-        if xval < 0:
-            xval=640-snake_seg_size
-        if yval > 480-snake_seg_size:
-            yval=0
-        if yval < 0:
-            yval=480-snake_seg_size
+
 
         #the appends only happen when the snake moves
         if (xval,yval) != (xvalprev,yvalprev):
@@ -174,9 +191,25 @@ if __name__ == "__main__":
     while arg:
         #set the buttons,if arg==0 the program exits
         if arg == 1:
-            main()
+            marg=lsm.menu()
+            if marg!=0 and marg!=7:
+                main(marg)
+            elif marg:
+                clvlarg=edl.lvlquery()
+                if clvlarg:
+                    main(clvlarg)
+
+
         elif arg == 2:
-            edit.editor()
+            earg=edl.editorui()
+            while earg:
+                if earg == 1:
+                    edit.editor('')
+                elif earg == 2:
+                    edarg=edl.lvlquery()
+                    if edarg:
+                        edit.editor(edarg)
+                earg=edl.editorui()
         arg=m.menu()
 
 
